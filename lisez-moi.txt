@@ -1,18 +1,14 @@
 @HiroshimanRise
 #anonym8 (Privacy Friend)
 
-#Établi un tunnel proxy transparent ? travers Tor, I2P, Privoxy, Polipo
-et modifie les DNS;
-#Inclue la fonction Anonymizing Relay Monitor (arm), macchanger et wipe
-(effacement de la ram et du swap)
-#Testé sous #Debian #Kali #Parrot
-#Je vous encourage ? améliorer et partager ce soft pour la liberté et le
-respect de la vie privée.
+Établi un tunnel proxy transparent ? travers Tor, I2P, Privoxy, Polipo et modifie les DNS;
+Inclue la fonction Anonymizing Relay Monitor (arm), macchanger et wipe (effacement de la ram et du swap);
+Testé sous #Debian #Kali #Parrot;
+Je vous encourage à améliorer et partager ce soft pour la liberté et le respect de la vie privée.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Pour le bon fonctionnement du script, les paquets suivants seront
-automatiquement installés:
+Pour le bon fonctionnement du script, les paquets suivants seront automatiquement installés:
 
 -Tor        
 -macchanger
@@ -43,12 +39,12 @@ juste par oui ou non aux éventuelles questions.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Pour plus de sécurité je vous recommande d'utiliser firefox.
+Pour plus de sécurité et par souci d'éthique, je vous recommande d'utiliser Firefox.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Voici une liste d'add on Firefox pour garantir une sécurité minimum
-(vous ?tes libre de vos choix):
+(vous êtes libre de vos choix):
 
 profil manager => https://ftp.mozilla.org/pub/utilities/profilemanager/1.0/
 random agent spoofer =>
@@ -59,7 +55,7 @@ https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/
 HTTPS everywhere =>
 https://addons.mozilla.org/fr/firefox/addon/https-everywhere/
 
-Rebootez votre syst?me, vous ?tes désormais pr?t(e)s ? affronter la
+Rebootez votre systême, vous êtes désormais prêt(e)s ? affronter la
 jungle des interwebs en mode "survival_horror", enjoy!
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
