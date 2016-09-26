@@ -1,0 +1,13 @@
+# This file only needs to list configuration variables that deviate
+# from the default values.  See /usr/share/doc/polipo/examples/config.sample
+# and "polipo -v" for variables you can tweak and further information.
+
+logSyslog = true
+logFile = /var/log/polipo/polipo.log
+dnsUseGethostbyname = yes
+# Envoyer moins d'informations personnelles sur le net :
+censoredHeaders = from, accept-language
+censorReferer = maybe
+# tor
+socksParentProxy = "localhost:9050"
+socksProxyType = socks5
