@@ -34,8 +34,7 @@ chmod +x INSTALL.sh
 puis:
 bash INSTALL.sh
 
-le script va maintenant installer les composants nécessaires, répondez
-juste par oui ou non aux éventuelles questions.
+le script va maintenant installer les composants nécessaires, répondez juste par oui ou non aux éventuelles questions.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -43,17 +42,13 @@ Pour plus de sécurité et par souci d'éthique, je vous recommande d'utiliser F
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Voici une liste d'add on Firefox pour garantir une sécurité minimum
-(vous êtes libre de vos choix):
+Voici une liste d'add on Firefox pour garantir une sécurité minimum (vous êtes libre de vos choix):
 
 profil manager => https://ftp.mozilla.org/pub/utilities/profilemanager/1.0/
-random agent spoofer =>
-https://addons.mozilla.org/en-US/firefox/addon/random-agent-spoofer/
+random agent spoofer => https://addons.mozilla.org/en-US/firefox/addon/random-agent-spoofer/
 no script => https://addons.mozilla.org/en-US/firefox/addon/noscript/
-ublock origin =>
-https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/
-HTTPS everywhere =>
-https://addons.mozilla.org/fr/firefox/addon/https-everywhere/
+ublock origin => https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/
+HTTPS everywhere => https://addons.mozilla.org/fr/firefox/addon/https-everywhere/
 
 Rebootez votre systême, vous êtes désormais prêt(e)s à affronter la jungle des interwebs en mode "survival_horror", enjoy!
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
