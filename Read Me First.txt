@@ -2,7 +2,7 @@
 #anonym8 (Privacy Friend)
  
 #Sets Global system wide TOR, I2P, Privoxy, Polipo and modify DNS;
-#Include Anonymizing Relay Monitor (arm), macchanger and wipe (Cleans RAM/cache & swap-space) features
+#Include Anonymizing Relay Monitor (arm), macchanger and wipe (Cleans RAM/cache & swap-space) features.
 #Tested on #Debian #Kali #Parrot
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
@@ -27,7 +27,7 @@ they'll be automatically installed.
 
 Open a root terminal and type:
 
-cd anonym8_directory I.Ex: cd /home/toto/Desktop/anonym8
+cd anonym8_directory I.Ex: cd /home/toto/Desktop/anonym8-master
 
 then:
 chmod +x INSTALL.sh
