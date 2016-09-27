@@ -1,7 +1,7 @@
 @HiroshimanRise
 #anonym8 (Privacy Friend)
 
-Établi un tunnel proxy transparent ? travers Tor, I2P, Privoxy, Polipo et modifie les DNS;
+Établi un tunnel proxy transparent à travers Tor, I2P, Privoxy, Polipo et modifie les DNS;
 Inclue la fonction Anonymizing Relay Monitor (arm), macchanger et wipe (effacement de la ram et du swap);
 Testé sous #Debian #Kali #Parrot;
 Je vous encourage à améliorer et partager ce soft pour la liberté et le respect de la vie privée.
@@ -26,13 +26,13 @@ Pour le bon fonctionnement du script, les paquets suivants seront automatiquemen
 
 Pour l'installation, ouvrez un terminal root et tapez:
 
-cd chemin_du_dossier_anonym8  ex: cd /home/toto/Desktop/anonym8
+cd chemin_du_dossier_anonym8-master  ex: cd /home/toto/Desktop/anonym8-master
 
 puis:
 chmod +x INSTALL.sh
 
 puis:
-INSTALL.sh
+bash INSTALL.sh
 
 le script va maintenant installer les composants nécessaires, répondez
 juste par oui ou non aux éventuelles questions.
@@ -55,8 +55,7 @@ https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/
 HTTPS everywhere =>
 https://addons.mozilla.org/fr/firefox/addon/https-everywhere/
 
-Rebootez votre systême, vous êtes désormais prêt(e)s ? affronter la
-jungle des interwebs en mode "survival_horror", enjoy!
+Rebootez votre systême, vous êtes désormais prêt(e)s à affronter la jungle des interwebs en mode "survival_horror", enjoy!
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 usage:
