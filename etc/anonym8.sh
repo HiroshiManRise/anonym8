@@ -1,14 +1,13 @@
 #!/bin/bash
 
 # This code is based on anonsurf by #ParrotSec & AnonSecTunnel by cysec666 #AnonSec
-# implementing TOR, I2P, Privoxy, Polipo, arm-tor and MacChanger for a simple and better privacy and security.
 
 # Coded by Hiroshiman
 # Twitter: @HiroshimanRise
 
 ### BEGIN INIT INFO
 # Provides: Anonym8
-# Short-Description: Transparent Proxy through TOR, I2P, Privoxy, Polipo + arm-tor and MacChanger features
+# Short-Description: Transparent Proxy through TOR, I2P, Privoxy, Polipo + arm-tor and MacChanger features, for a simple and better privacy and security.
 ### END INIT INFO
 
 # Thanks to:
