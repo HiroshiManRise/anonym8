@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=anonym8-gui
+GenericName=anonym8-gui
+Comment=Advanced ID Spoofer
+Keywords=Spoof
+Icon=/opt/anonym8/Anons.jpeg
+TryExec=/opt/anonym8/anonym8-gui
+Exec=/opt/anonym8/anonym8-gui
+Categories=System;Monitor;
+X-GNOME-Autostart-Delay=30
+StartupNotify=true
