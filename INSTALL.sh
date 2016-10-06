@@ -6,7 +6,7 @@
 	export RED='\033[1;91m'
 	export RESETCOLOR='\033[1;00m'
 
-	echo -e "This script will install anonym8 on your computer..."
+	echo -e "This script will install anonym8 on your computer...\n"
 	sleep 1
 	cp -Rf opt/anonym8 /opt/anonym8
 	sleep 1
@@ -30,7 +30,7 @@
 	sleep 1
 	chmod +x /etc/init.d/anonym8.sh /usr/bin/anonym8 /usr/bin/anON /usr/bin/anOFF /opt/anonym8/anonym8-gui
 	sleep 1
-	echo -e "	 anonym8 (v 1.0) Usage Ex:\n
+	echo -e "\n	 anonym8 (v 1.0) Usage Ex:\n
 	$RED anON$BLUE  =>$GREEN automated protection [ON]
 	$RED anOFF$BLUE =>$GREEN automated protection$RED [OFF]\n
 	$RED ADVANCED COMMANDS LIST:\n
