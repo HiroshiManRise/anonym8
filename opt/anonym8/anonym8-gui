@@ -1,0 +1,258 @@
+#!/bin/bash
+
+# This code is based on anonsurf by #ParrotSec & AnonSecTunnel by cysec666 #AnonSec
+
+# Coded by Hiroshiman
+# Twitter: @HiroshimanRise
+
+### BEGIN INIT INFO
+# Provides: Anonym8
+# Short-Description: Transparent Proxy through TOR, Privoxy, Polipo + MacChanger features, for a simple and better privacy and security.
+### END INIT INFO
+
+# Thanks to:
+# cysec666 '@cysec666'
+# Lorenzo 'EclipseSpark' Faletra <eclipse@frozenbox.org>
+# Lisetta 'Sheireen' Ferrero <sheireen@frozenbox.org>
+# Francesco 'mibofra'/'Eli Aran'/'SimpleSmibs' Bonanno <mibofra@ircforce.tk> <mibofra@frozenbox.org>
+
+# Feel free to edit and share this script ;)
+
+tmp_file=/tmp/code_terminal
+
+#anonym8
+start='echo "anON" > /tmp/code_terminal'
+stop='echo "anOFF" > /tmp/code_terminal'
+change='echo "anonym8 change" > /tmp/code_terminal'
+
+#macchanger
+start_mac='echo "anonym8 start_mac" > /tmp/code_terminal'
+stop_mac='echo "anonym8 stop_mac" > /tmp/code_terminal'
+status_mac='echo "anonym8 status_mac" > /tmp/code_terminal'
+
+#ip
+status_ip='echo "anonym8 status_ip" > /tmp/code_terminal'
+
+#tor
+start_tor='echo "anonym8 start" > /tmp/code_terminal'
+stop_tor='echo "anonym8 stop" > /tmp/code_terminal'
+status_tor='echo "anonym8 status" > /tmp/code_terminal'
+
+#privoxy
+start_privoxy='echo "anonym8 start_privoxy" > /tmp/code_terminal'
+stop_privoxy='echo "anonym8 stop_privoxy" > /tmp/code_terminal'
+status_privoxy='echo "anonym8 status_privoxy" > /tmp/code_terminal'
+
+#polipo
+start_polipo='echo "anonym8 start_polipo" > /tmp/code_terminal'
+stop_polipo='echo "anonym8 stop_polipo" > /tmp/code_terminal'
+status_polipo='echo "anonym8 status_polipo" > /tmp/code_terminal'
+
+#i2p
+start_i2p='echo "anonym8 start_i2p" > /tmp/code_terminal'
+stop_i2p='echo "anonym8 stop_i2p" > /tmp/code_terminal'
+status_i2p='echo "anonym8 status_i2p" > /tmp/code_terminal'
+
+#arm
+start_arm='echo "anonym8 start_arm" > /tmp/code_terminal'
+
+#wipe
+wipe='echo "anonym8 wipe" > /tmp/code_terminal'
+
+#hostname
+change_hostname='echo "anonym8 change_hostname" > /tmp/code_terminal'
+restore_hostname='echo "anonym8 restore_hostname" > /tmp/code_terminal'
+status_hostname='echo "anonym8 status_hostname" > /tmp/code_terminal'
+
+dim='8'
+
+export MAIN_DIALOG='
+<window window_position="1" title="anonym8" resizable="true" image-name="emblem-people">
+	<vbox>
+		<hbox>
+				<frame Anonym8>
+					<button tooltip-text="Start Anonym8">
+						<width>'$dim'</width>
+						<label> START </label>
+						<action>'$start'</action>
+						<action type="refresh">terminale</action>
+					</button>
+					<button tooltip-text="Stop Anonym8">
+						<width>'$dim'</width>
+						<label> STOP </label>
+						<action>'$stop'</action>
+						<action type="refresh">terminale</action>	    
+					</button>
+				</frame>
+				
+				<frame Status>
+					<button tooltip-text="Mac Status">
+						<width>'$dim'</width>
+						<label> MAC </label>
+						<action>'$status_mac'</action>
+						<action type="refresh">terminale</action>
+					</button>
+					<button tooltip-text="Hostname Status">
+						<width>'$dim'</width>
+						<label> HOSTNAME </label>
+						<action>'$status_hostname'</action>
+						<action type="refresh">terminale</action>
+					</button>
+					<button tooltip-text="IP Status">
+						<width>'$dim'</width>
+						<label> IP </label>
+						<action>'$status_ip'</action>
+						<action type="refresh">terminale</action>
+					</button>
+					<button tooltip-text="Tor Status">
+						<width>'$dim'</width>
+						<label> TOR </label>
+						<action>'$status_tor'</action>
+						<action type="refresh">terminale</action>
+					</button>
+					<button tooltip-text="I2P Status">
+						<width>'$dim'</width>
+						<label> I2P </label>
+						<action>'$status_i2p'</action>
+						<action type="refresh">terminale</action>
+					</button>
+					<button tooltip-text="Privoxy Status">
+						<width>'$dim'</width>
+						<label> PRIVOXY </label>
+						<action>'$status_privoxy'</action>
+						<action type="refresh">terminale</action>
+					</button>
+					<button tooltip-text="Polipo Status">
+						<width>'$dim'</width>
+						<label> POLIPO </label>
+						<action>'$status_polipo'</action>
+						<action type="refresh">terminale</action>
+					</button>
+			</frame>
+
+			<frame Features>
+				<frame Hostname>
+					<button tooltip-text="Manually Change Hostname">
+						<width>'$dim'</width>
+						<label> CHANGE </label>
+						<action>'$change_hostname'</action>
+						<action type="refresh">terminale</action>
+					</button>
+					<button tooltip-text="Manually Restore Hostname">
+						<width>'$dim'</width>
+						<label> RESTORE </label>
+						<action>'$restore_hostname'</action>
+						<action type="refresh">terminale</action>
+					</button>
+				</frame>
+				<frame Mac>
+					<button tooltip-text="Manually Start Mac Spoofer">
+						<width>'$dim'</width>
+						<label> CHANGE </label>
+						<action>'$start_mac'</action>
+						<action type="refresh">terminale</action>
+					</button>
+					<button tooltip-text="Manually Stop Mac Spoofer">
+						<width>'$dim'</width>
+						<label> RESTORE </label>
+						<action>'$stop_mac'</action>
+						<action type="refresh">terminale</action>
+					</button>
+				</frame>
+				<frame Arm>
+					<button tooltip-text="Start Anonymizing Relay Monitor">
+						<width>'$dim'</width>
+						<label> MONITOR </label>
+						<action>'$start_arm'</action>
+						<action type="refresh">terminale</action>
+					</button>
+				</frame>
+				<frame Wipe>
+					<button tooltip-text="Clean cache, Ram & swap-space">
+						<width>'$dim'</width>
+						<label> CLEAN </label>
+						<action>'$wipe'</action>
+						<action type="refresh">terminale</action>
+					</button>
+				</frame>
+			</frame>
+
+			<frame Services>
+				<frame Tor>
+					<button tooltip-text="Manually Start Tor">
+						<width>'$dim'</width>
+						<label> START </label>
+						<action>'$start_tor'</action>
+						<action type="refresh">terminale</action>
+					</button>
+					<button tooltip-text="Manually Stop Tor">
+						<width>'$dim'</width>
+						<label> STOP </label>
+						<action>'$stop_tor'</action>
+						<action type="refresh">terminale</action>
+					</button>
+					<button tooltip-text="Change Tor Node">
+						<width>'$dim'</width>
+						<label> CHANGE </label>
+						<action>'$change'</action>
+						<action type="refresh">terminale</action> 
+					</button>
+				</frame>
+				<frame Privoxy>
+					<button tooltip-text="Manually Start Privoxy">
+						<width>'$dim'</width>
+						<label> START </label>
+						<action>'$start_privoxy'</action>
+						<action type="refresh">terminale</action>
+					</button>
+					<button tooltip-text="Manually Stop Privoxy">
+						<width>'$dim'</width>
+						<label> STOP </label>
+						<action>'$stop_privoxy'</action>
+						<action type="refresh">terminale</action>
+					</button>
+				</frame>
+				<frame Polipo>
+					<button tooltip-text="Manually Start Polipo">
+						<width>'$dim'</width>
+						<label> START </label>
+						<action>'$start_polipo'</action>
+						<action type="refresh">terminale</action>
+					</button>
+					<button tooltip-text="Manually Stop Polipo">
+						<width>'$dim'</width>
+						<label> STOP </label>
+						<action>'$stop_polipo'</action>
+						<action type="refresh">terminale</action>
+					</button>
+				</frame>
+				<frame I2p>
+					<button tooltip-text="Manually Start I2p">
+						<width>'$dim'</width>
+						<label> START </label>
+						<action>'$start_i2p'</action>
+						<action type="refresh">terminale</action>
+					</button>
+					<button tooltip-text="Manually Stop I2p">
+						<width>'$dim'</width>
+						<label> STOP </label>
+						<action>'$stop_i2p'</action>
+						<action type="refresh">terminale</action>
+					</button>
+				</frame>
+			</frame>
+			<frame>
+				<terminal argv0="/bin/bash" space-expand="true" space-fill="true" background-transparent="true" background-saturation="0.2" background-tint-color="#000000" text-foreground-color="#FF8300">
+					<variable>terminale</variable>
+					<input file>'$tmp_file'</input>
+				</terminal>
+			</frame>
+    </hbox>
+	</vbox>
+</window>
+'
+gtkdialog --program=MAIN_DIALOG
+
+sed -i 'd' > $tmp_file
+
+exit
