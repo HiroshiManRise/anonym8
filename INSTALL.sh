@@ -8,7 +8,7 @@
 
 	echo -e "This script will install anonym8 on your computer..."
 	sleep 1
-	cp opt/anonym8 /opt/anonym8
+	cp -Rf opt/anonym8 /opt/anonym8
 	sleep 1
 	cp -Rf anonym8.desktop /usr/share/applications
 	sleep 1
