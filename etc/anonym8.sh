@@ -199,8 +199,8 @@ function bleachbit {
 #################################
 
 function iptables_tor {
-
-	if [ -f /etc/default/toriptables ] ; then		
+	updatedb
+	if [ -f $(which transparent-proxy.sh) ] ; then		
 		/bin/bash $(which transparent-proxy.sh)
 	fi
 
@@ -208,7 +208,8 @@ function iptables_tor {
 }
 
 function iptables_flush {
-	if [ -f /usr/bin/iptables-flush ] ; then
+	updatedb
+	if [ -f $(which iptables-flush.sh ] ; then
 		/bin/bash $(which iptables-flush.sh)
 	fi
 }
@@ -813,43 +814,11 @@ case "$1" in
 	;;
    *)
 # USAGE ####
-	echo -e "	 anonym8 (v 1.0) Usage Ex:\n
-	$RED anON$BLUE  =>$GREEN automated protection [ON]
-	$RED anOFF$BLUE =>$GREEN automated protection$RED [OFF]\n
-	$RED ADVANCED COMMANDS LIST:\n
-	$RED┌──[$GREEN$USER$RED@$BLUE`hostname`$RED]─[$GREEN$PWD$RED]
-	$RED└──╼ $GREEN"anonym8" $RED{$GREEN"start"$RED|$GREEN"stop"$RED|$GREEN"change"$RED|$GREEN"status..."$RED}\n
-	$BLUE----[ Tor Tunneling related features ]----
-	$RED anonym8 start$BLUE            =>$GREEN Start Tor Tunneling	  
-	$RED anonym8 stop$BLUE             =>$GREEN Stop Tor Tunneling
-	$RED anonym8 change$BLUE           =>$GREEN Changes identity restarting TOR
-	$RED anonym8 status$BLUE           =>$GREEN Tor Tunneling Status\n
-	$BLUE----[ IP related features ]----
-	$RED anonym8 status_ip$BLUE        =>$GREEN IP status\n
-	$BLUE----[ I2P related features ]----
-	$RED anonym8 start_i2p$BLUE        =>$GREEN Start i2p services
-	$RED anonym8 stop_i2p$BLUE         =>$GREEN Stop i2p services
-	$RED anonym8 status_i2p$BLUE       =>$GREEN i2p status\n
-	$BLUE----[ privoxy related features ]----
-	$RED anonym8 start_privoxy$BLUE    =>$GREEN Start privoxy services
-	$RED anonym8 stop_privoxy$BLUE     =>$GREEN Stop privoxy services
-	$RED anonym8 status_privoxy$BLUE   =>$GREEN privoxy status\n
-	$BLUE----[ polipo related features ]----
-	$RED anonym8 start_polipo$BLUE     =>$GREEN Start polipo services
-	$RED anonym8 stop_polipo$BLUE      =>$GREEN Stop polipo services
-	$RED anonym8 status_polipo$BLUE    =>$GREEN Polipo status\n
-	$BLUE----[ macchanger related features ]----
-	$RED anonym8 spoofing_wlan0_mac$BLUE        =>$GREEN Start macchanger services
-	$RED anonym8 stop_mac$BLUE         =>$GREEN Stop macchanger services
-	$RED anonym8 status_mac$BLUE       =>$GREEN macchanger status\n
-	$BLUE----[ arm related features ]----
-	$RED anonym8 start_arm$BLUE        =>$GREEN Start Monitoring Anonymizing Relay (arm)\n
-	$BLUE----[ wipe related features ]----
-	$RED anonym8 wipe$BLUE             =>$GREEN cache, RAM & swap-space cleaner\n
-	$BLUE----[ hostname related features ]----
-	$RED anonym8 change_hostname$BLUE  =>$GREEN Randomly Spoofing Hostname
-	$RED anonym8 restore_hostname$BLUE =>$GREEN Restore Default Hostname
-	$RED anonym8 status_hostname$BLUE  =>$GREEN Show Current Hostname\n
+	updatedb
+	if [ -f $(which helpers.sh) ] ; then
+		
+		/bin/bash $(which helpers.sh)
+	fi
 
 	$RESETCOLOR" >&2
 exit 1
