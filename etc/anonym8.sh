@@ -21,8 +21,8 @@
 #		Lorenzo 'EclipseSpark' Faletra <eclipse@frozenbox.org>
 # 		Lisetta 'Sheireen' Ferrero <sheireen@frozenbox.org>
 # 		Francesco 'mibofra'/'Eli Aran'/'SimpleSmibs' Bonanno <mibofra@ircforce.tk> <mibofra@frozenbox.org>
-#       COMPANY:  Community Team teeknofil.
-#       VERSION:  1.1
+#       COMPANY:  Community Team Teeknofil.
+#       VERSION:  2.0
 #       CREATED:  
 #      REVISION:  07/11/2017 03:42:31 CEST---
 #===============================================================================
@@ -201,7 +201,7 @@ function bleachbit {
 function iptables_tor {
 	updatedb
 	if [ -f $(which transparent-proxy.sh) ] ; then		
-		/bin/bash $(which transparent-proxy.sh)
+		/bin/bash $(which transparent-proxy)
 	fi
 
 	service tor restart
@@ -210,7 +210,7 @@ function iptables_tor {
 function iptables_flush {
 	updatedb
 	if [ -f $(which iptables-flush.sh ] ; then
-		/bin/bash $(which iptables-flush.sh)
+		/bin/bash $(which iptables-flush)
 	fi
 }
 
@@ -816,11 +816,10 @@ case "$1" in
 # USAGE ####
 	updatedb
 	if [ -f $(which helpers.sh) ] ; then
-		
-		/bin/bash $(which helpers.sh)
+		updatedb
+		/bin/bash $(which helpers.sh) >&2
 	fi
-
-	$RESETCOLOR" >&2
+	
 exit 1
 ;;
 esac
