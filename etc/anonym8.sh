@@ -1,29 +1,56 @@
 #!/bin/bash
 
-# This code is based on anonsurf by #ParrotSec & AnonSecTunnel by cysec666 #AnonSec
-# implementing TOR, I2P, Privoxy, Polipo, arm-tor and MacChanger for a simple and better privacy and security.
-
-# Coded by Hiroshiman
-# Twitter: @HiroshimanRise
-
+#===============================================================================
+#
+#          FILE:  Anonym8
+#
+#         USAGE:  anonym8 start|stop|change|status
+#
+#   DESCRIPTION:  This code is based on anonsurf by #ParrotSec & AnonSecTunnel by cysec666 #AnonSec 
+#                 implementing TOR, I2P, Privoxy, Polipo, arm-tor and MacChanger for a simple and better privacy and # #                 security.	
+# Short-Description: Transparent Proxy through TOR, I2P, Privoxy, Polipo + arm-tor and MacChanger features virt-what
+# 	Copyright (C) 2016 Coded by Hiroshiman
+#       OPTIONS:  ---
+#  REQUIREMENTS:Tor macchanger resolvconf dnsmasq polipo privoxy arm libnotify curl bleachbit
+#          BUGS:  ---
+#         NOTES:  Contact teeknofil.dev@gmail.com for bug.
+#         AUTHOR:  Twitter: @HiroshimanRise
+#         Thanks to:
+#		cysec666 '@cysec666'
+#		teeknofil '@teeknofil'
+#		Lorenzo 'EclipseSpark' Faletra <eclipse@frozenbox.org>
+# 		Lisetta 'Sheireen' Ferrero <sheireen@frozenbox.org>
+# 		Francesco 'mibofra'/'Eli Aran'/'SimpleSmibs' Bonanno <mibofra@ircforce.tk> <mibofra@frozenbox.org>
+#       COMPANY:  Community Team teeknofil.
+#       VERSION:  1.1
+#       CREATED:  
+#      REVISION:  07/11/2017 03:42:31 CEST---
+#===============================================================================
+# Feel free to edit and share this script ;)
 ### BEGIN INIT INFO
 # Provides: Anonym8
 # Short-Description: Transparent Proxy through TOR, I2P, Privoxy, Polipo + arm-tor and MacChanger features
 ### END INIT INFO
 
-# Thanks to:
-# cysec666 '@cysec666'
-# Lorenzo 'EclipseSpark' Faletra <eclipse@frozenbox.org>
-# Lisetta 'Sheireen' Ferrero <sheireen@frozenbox.org>
-# Francesco 'mibofra'/'Eli Aran'/'SimpleSmibs' Bonanno <mibofra@ircforce.tk> <mibofra@frozenbox.org>
 
-# Feel free to edit and share this script ;)
 
-export BLUE='\033[1;94m'
-export GREEN='\033[1;92m'
-export RED='\033[1;91m'
+
+
+export BOLD='\033[01;01m'	# Highlight
+export BLUE='\033[1;94m'	# Info
+export GREEN='\033[1;92m'	# Success
+export RED='\033[1;91m'		# Issues/Errors
+export YELLOW='\033[01;33m'	# Warnings/Information	
 export RESETCOLOR='\033[1;00m'
 export notify
+
+ColorEcho()
+{
+  echo -e "${1}${2}$RESET"  
+}
+
+OK=$(ColorEcho $GREEN "[ OK ]")
+TASK=$(ColorEcho $GREEN "[+]")
 
 # Destinations you don't want routed through Tor
 TOR_EXCLUDE="192.168.0.0/16 172.16.0.0/12 10.0.0.0/8"
@@ -35,7 +62,42 @@ TOR_UID="debian-tor"
 # Tor's TransPort
 TOR_PORT="9040"
 
+# List, separated by spaces, of process names that should be killed
+TO_KILL="chrome chromium transmission dropbox iceweasel icedove firefox firefox-esr pidgin pidgin.orig skype deluge thunderbird xchat dnsmasq"
+
+# List, separated by spaces, of BleachBit cleaners
+BLEACHBIT_CLEANERS="bash.history system.cache system.clipboard system.custom system.recent_documents system.rotated_logs system.tmp system.trash adobe_reader.cache chromium.cache chromium.current_session chromium.history elinks.history emesene.cache epiphany.cache firefox.url_history flash.cache flash.cookies google_chrome.cache google_chrome.history  links2.history opera.cache opera.search_history opera.url_history"
+
+# Overwrite files to hide contents
+OVERWRITE="true"
+#Proxy
+
+ftp_proxy="127.0.0.1:9050" 
+http_proxy="127.0.0.1:9050"
+https_proxy="127.0.0.1:9050"
+socks_proxy="127.0.0.1:9050"
+# Persistant proxychains
+# eg : nmap -sT  -p 22 scanme.nmap.org
+# TO DO
+# Fix Me -> reset default value
+LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libproxychains.so.3"  
+
 ### FUNCTIONS ####
+
+################################# 
+#                               #
+#      Divers	                #
+#                               # 
+#################################
+
+function warning {
+	echo -e " $GREEN[$RED!$GREEN]$RESETCOLOR Warning ! \n"
+	echo " This script simply avoids the most common data leakage in the system."
+	echo " What you are doing is allowing you to remain anonymous"
+	echo " Do not do stupid things".
+	echo
+	echo -e "  $GREEN[$RED!$GREEN]$RESETCOLOR Edit /etc/default/transparent-proxy.sh for your firewall ! ! ! \n"
+}
 
 ## notify ####
 function notify {
@@ -44,56 +106,43 @@ function notify {
 	fi
 }
 
-## hostname ####
-
-# change ####
-function change_hostname {
-	cp /etc/hostname /etc/hostname.bak
-	cp /etc/hosts /etc/hosts.bak
-	sudo service network-manager stop
-	CURRENT_HOSTNAME=$(hostname)
-	dhclient -r
-	rm -f /var/lib/dhcp/dhclient*
-	RANDOM_HOSTNAME=$(shuf -n 1 /etc/dictionaries-common/words | sed -r 's/[^a-zA-Z]//g' | awk '{print tolower($0)}')
-	NEW_HOSTNAME=${1:-$RANDOM_HOSTNAME}
-	echo "$NEW_HOSTNAME" > /etc/hostname
-	sed -i 's/127.0.1.1.*/127.0.1.1\t'"$NEW_HOSTNAME"'/g' /etc/hosts
-	if [ -f "$HOME/.Xauthority" ] ; then
-		su "$SUDO_USER" -c "xauth -n list | grep -v $CURRENT_HOSTNAME | cut -f1 -d\ | xargs -i xauth remove {}"
-		su "$SUDO_USER" -c "xauth add $(xauth -n list | tail -1 | sed 's/^.*\//'$NEW_HOSTNAME'\//g')"
-		echo " * X authority file updated"
+## Make sure that only root can run this script
+function check_root {
+	if [ $(id -u) -ne 0 ]; then
+		echo -e "\n$GREEN[$RED!$GREEN]$RED This script must be run as root$RESETCOLOR" >&2
+		exit 1
 	fi
-	sudo service network-manager start
-	sleep 5
-	echo -e -n "\n$GREEN*$BLUE New Hostname: $GREEN"
-	hostname
-	notify "hostname spoofed"
 }
 
-# restore ####
-function restore_hostname {
-	sudo service network-manager stop
-	dhclient -r
-	rm -f /var/lib/dhcp/dhclient*
-	if [ -e /etc/hostname.bak ]; then
-		rm /etc/hostname
-		cp /etc/hostname.bak /etc/hostname
-	fi
-	if [ -e /etc/hosts.bak ]; then
-		rm /etc/hosts
-		cp /etc/hosts.bak /etc/hosts
-	fi
-	sudo service network-manager start
-	sleep 5
-	echo -e -n "\n$GREEN*$BLUE Restored Hostname: $GREEN"
-	hostname 
-	notify "hostname restored"
-}
+# General-purpose Yes/No prompt function
+function ask {
+	while true; do
+		if [ "${2:-}" = "Y" ]; then
+			prompt="Y/n"
+			default=Y
+		elif [ "${2:-}" = "N" ]; then
+			prompt="y/N"
+			default=N
+		else
+			prompt="y/n"
+			default=
+		fi
 
-# status ####
-function status_hostname {
-	echo -e -n "\n$GREEN*$BLUE Current Hostname: $GREEN"
-	hostname
+		# Ask the question
+		echo
+		read -p "$1 [$prompt] > " REPLY
+
+		# Default?
+		if [ -z "$REPLY" ]; then
+			REPLY=$default
+		fi
+
+		# Check if the reply is valid
+		case "$REPLY" in
+			Y*|y*) return 0 ;;
+			N*|n*) return 1 ;;
+		esac
+	done
 }
 
 ## wipe ####
@@ -115,8 +164,186 @@ function start_arm {
 	sleep 1
 }
 
-## PRIVOXY ####
+################################# 
+#                               #
+#      Privacy	                #
+#                               # 
+#################################
 
+# Kill processes at startup
+function kill_process {
+	if [ "$TO_KILL" != "" ]; then
+		killall -q $TO_KILL
+		echo -e "\n$GREEN*$BLUE Killing dangerous applications and cleaning some cache elements...\n"$RESETCOLOR
+	fi
+}
+
+# BleachBit cleaners deletes unnecessary files to preserve privacy
+function bleachbit {
+	if [ "$OVERWRITE" = "true" ] ; then
+		echo -e " $GREEN*$RESETCOLOR Deleting unnecessary files ... "
+		bleachbit -o -c $BLEACHBIT_CLEANERS >/dev/null
+	else
+		echo -e " $GREEN*$RESETCOLOR Deleting unnecessary files ... "
+		bleachbit -c $BLEACHBIT_CLEANERS >/dev/null
+	fi
+	sleep 1
+	echo -e "$GREEN*$BLUE Dangerous applications$GREEN [KILLED]\n"
+	echo "Done!"
+}
+
+################################# 
+#                               #
+#      Iptables	                #
+#                               # 
+#################################
+
+function iptables_tor {
+
+	if [ -f /etc/default/toriptables ] ; then		
+		/bin/bash $(which transparent-proxy.sh)
+	fi
+
+	service tor restart
+}
+
+function iptables_flush {
+	if [ -f /usr/bin/iptables-flush ] ; then
+		/bin/bash $(which iptables-flush.sh)
+	fi
+}
+
+# Implementation of Transparently Routing Traffic Through Tor
+# https://trac.torproject.org/projects/tor/wiki/doc/TransparentProxy
+function transparent_proxy {	
+
+
+	if [ ! -e /var/run/tor/tor.pid ]; then
+	echo -e "$GREEN*$BLUE starting Tor...\n" >&2
+		sleep 1
+		service resolvconf stop
+		killall dnsmasq
+		sleep 2
+		service tor start
+		sleep 6
+	fi
+	
+	if ! [ -f /etc/network/iptables.rules ]; then
+		iptables-save > /etc/network/iptables.rules
+		echo -e "$GREEN*$BLUE Saving iptables.rules...$RESETCOLOR\n"
+		sleep 2
+	fi	
+	
+	iptables_flush
+	echo -e "$GREEN*$BLUE iptables.rules$GREEN [SAVED]\n"	
+	
+	echo -e "$GREEN*$BLUE Saving resolv.conf...\n"
+	cp /etc/resolv.conf /etc/resolv.conf.bak
+	touch /etc/resolv.conf
+	sleep 2
+	echo -e "$GREEN*$BLUE resolv.conf$GREEN [SAVED]\n"
+	sleep 2
+	echo -e "$GREEN*$BLUE Modifying DNS...\n"
+	sleep 2
+	echo -e 'nameserver 127.0.0.1\nnameserver 213.73.91.35\nnameserver 87.118.100.175' > /etc/resolv.conf
+	echo -e "$GREEN*$BLUE resolv.conf: Chaos Computer Club & German Privacy Foundation DNS$GREEN [ACTIVATED]\n"$RESETCOLOR        
+	sleep 2
+	#Kill IPv6 services
+	echo -e " $GREEN[$BLUE i$GREEN ]$RESET Stopping IPv6 services \n"
+	# add lines to sysctl.conf that will kill ipv6 services
+	echo "net.ipv6.conf.all.disable_ipv6 = 1 " >> /etc/sysctl.conf
+	echo "net.ipv6.conf.default.disable_ipv6=1 " >> /etc/sysctl.conf
+	sysctl -p > /dev/null # have sysctl reread /etc/sysctl.conf
+	iptables_tor
+	
+	#Anonymous Proxy
+	export ftp_proxy  
+	export http_proxy
+	export https_proxy
+	export socks_proxy
+	export LD_PRELOAD 
+	
+	echo -e "$GREEN*$BLUE Tor Tunneling$GREEN [ON]"$RESETCOLOR 
+	sleep 1
+	notify "Tor Tunneling ON"  
+}
+
+################################# 
+#                               #
+#      Hostname	                #
+#                               # 
+#################################
+
+# Change the local hostname
+
+# change ####
+function change_hostname {
+	cp /etc/hostname /etc/hostname.bak
+	cp /etc/hosts /etc/hosts.bak
+	sudo service network-manager stop
+	CURRENT_HOSTNAME=$(hostname)
+	clean_DHCP true
+	RANDOM_HOSTNAME=$(shuf -n 1 /etc/dictionaries-common/words | sed -r 's/[^a-zA-Z]//g' | awk '{print tolower($0)}')
+	NEW_HOSTNAME=${1:-$RANDOM_HOSTNAME}
+	echo "$NEW_HOSTNAME" > /etc/hostname
+	sed -i 's/127.0.1.1.*/127.0.1.1\t'"$NEW_HOSTNAME"'/g' /etc/hosts
+	
+	if [ -f "$HOME/.Xauthority" ] ; then
+		su "$SUDO_USER" -c "xauth -n list | grep -v $CURRENT_HOSTNAME | cut -f1 -d\ | xargs -i xauth remove {}"
+		su "$SUDO_USER" -c "xauth add $(xauth -n list | tail -1 | sed 's/^.*\//'$NEW_HOSTNAME'\//g')"
+		echo " * X authority file updated"
+	fi
+	
+	sudo service network-manager start
+	sleep 5
+	echo -e -n "\n$GREEN*$BLUE New Hostname: $GREEN"
+	hostname
+	notify "hostname spoofed"
+}
+
+# restore ####
+function restore_hostname {
+	sudo service network-manager stop
+	clean_DHCP true
+	if [ -e /etc/hostname.bak ]; then
+		rm /etc/hostname
+		cp /etc/hostname.bak /etc/hostname
+	fi
+	if [ -e /etc/hosts.bak ]; then
+		rm /etc/hosts
+		cp /etc/hosts.bak /etc/hosts
+	fi
+	sudo service network-manager start
+	sleep 5
+	echo -e -n "\n$GREEN*$BLUE Restored Hostname: $GREEN"
+	hostname 
+	notify "hostname restored"
+}
+
+function custom_hostname {
+
+	CURRENT_HOSTNAME=$(hostname)
+	RANDOM_HOSTNAME=$(shuf -n 1 /etc/dictionaries-common/words | sed -r 's/[^a-zA-Z]//g' | awk '{print tolower($0)}')
+	NEW_HOSTNAME=${1:-$RANDOM_HOSTNAME}
+	echo $NEW_HOSTNAME > /etc/hostname
+	sed -i 's/127.0.0.1.*/127.0.0.1\t'$NEW_HOSTNAME'/g' /etc/hosts
+	echo -e " $GREEN*$RESET Change the hostname to $NEW_HOSTNAME"
+}
+
+# status ####
+function status_hostname {
+	echo -e -n "\n$GREEN*$BLUE Current Hostname: $GREEN"
+	hostname
+}
+
+
+
+
+################################# 
+#                               #
+#      PRIVOXY                  #
+#                               # 
+#################################
 # START ####
 function start_privoxy {
 	echo -e "\n$GREEN*$BLUE Starting Privoxy Service...\n"$RESETCOLOR       
@@ -146,7 +373,13 @@ function status_privoxy {
 	sleep 1
 }
 
-## POLIPO ####
+
+
+################################# 
+#                               #
+#      POLIPO                   #
+#                               # 
+#################################
 
 # START ####
 function start_polipo {
@@ -177,10 +410,47 @@ function status_polipo {
 	sleep 1
 }
 
-## MACCHANGER ####
+################################# 
+#                               #
+#      MACCHANGER               #
+#                               # 
+#################################
+
+
+## Change the MAC address for network interfaces
+start_mac ()
+{
+	echo -e "Select network interfaces : "
+	read IFACE
+	sleep 0.5
+	sudo service network-manager stop
+	sleep 0.5
+	echo -e "$GREEN*$BLUE $IFACE MAC address:\n"$GREEN	
+	sleep 0.5
+	ifconfig  $IFACE down
+	
+	
+	
+	if [ "$1" = "permanent" ]; then
+
+		NEW_MAC=$(macchanger -p "$IFACE" )
+		echo "$NEW_MAC"
+	else
+		NEW_MAC=$(macchanger -A "$IFACE" )
+		echo "$NEW_MAC"
+	fi
+	
+	sleep 0.5
+	sudo ifconfig $IFACE up
+	sleep 0.5
+	sudo service network-manager start
+	sleep 0.5
+	dhclient 
+}
+
 
 # START ####
-function start_mac {
+function spoofing_wlan0_mac {
 	echo -e "\n$GREEN*$BLUE Spoofing Mac Address...\n"
 	sudo service network-manager stop
 	sleep 1
@@ -228,7 +498,11 @@ function status_mac {
 	sleep 1
 }
 
-## I2P ####
+################################# 
+#                               #
+#      I2P                      #
+#                               # 
+#################################
 
 # START ####
 function start_i2p {
@@ -270,119 +544,106 @@ function status_i2p {
 	sleep 1
 }
 
-## IP ####
+################################# 
+#                               #
+#      IP                       #
+#                               # 
+#################################
+
 function status_ip {
-	echo -e -n "\n$GREEN*$BLUE Current Proxy IP: $GREEN"
-	curl icanhazip.com
+
+	echo -e -n "\n$GREEN*$BLUE Current Proxy IP: $GREEN"	
+	IP=$(curl -s https://check.torproject.org/?lang=en_US | egrep -m1 -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
+	sleep 1	
+	HTML=$(curl -s https://check.torproject.org/?lang=en_US)	
+	echo $HTML | grep -q "$BLUE Congratulations. This shell is configured to use Tor."
 	sleep 1
-	echo -e "\n$GREEN*$BLUE Current Tor IP:\n"$GREEN
-	sleep 1
-	curl ipinfo.io/
-	sleep 1
+	if [ ! $? -ne 0 ]; then	
+		echo  -e " $GREEN*$RESETCOLOR IP $IP"
+		echo -e " $GREEN*$RESETCOLOR Tor ON"
+		exit $?
+	else
+		echo -e " $GREEN*$RESETCOLOR IP $IP"
+		echo -e " $GREEN*$RESETCOLOR Tor OFF"
+		exit $?
+	fi
 }
+
+function clean_DHCP
+{
+	dhclient -r
+	
+	if [ "$OVERWRITE" = "true" ] ; then
+		rm -f /var/lib/dhcp/dhclient*
+	fi
+	
+	echo -e " $GREEN*$RESET We release the DHCP address"
+}
+
+################################# 
+#                               #
+#     Main                      #
+#                               # 
+#################################
 
 ## START ####
 function start {
-	# Make sure only root can run this script
-	if [ $(id -u) -ne 0 ]; then
-		echo -e "\n$GREEN[$RED!$GREEN]$RED This script must be run as root$RESETCOLOR" >&2
-		exit 1
+		
+	# Make sure only root can run our script
+	check_root
+	warning
+	# feel free to add your own internet connected app
+	kill_process
+	sleep 1
+	
+	if ask "Delete unnecessary files to preserve your privacy?" Y; then
+		bleachbit
+	fi	 
+	sleep 1	
+	
+	if Ask "You want to make a transparent routing traffic through Tor?" Y; then
+		transparent_proxy
+		echo -e "$TASK  All traffic was redirected throught Tor 	: $OK\n"			
+	fi		
+	sleep 1	
+	
+	if [ "$(virt-what)" != "" ]; then
+		echo " $GREEN*$RESET Unable to change MAC address in a Virtual Machine"
+	else
+		if Ask "Do you want to change the MAC address?" Y; then
+			start_mac
+		fi
 	fi
 	
-	echo -e "\n$GREEN*$BLUE Killing dangerous applications and cleaning some cache elements...\n"$RESETCOLOR
-	sleep 1
-	killall -q chrome dropbox iceweasel skype icedove thunderbird firefox-esr firefox chromium xchat transmission kvirc pidgin hexchat # feel free to add your own internet connected app
-	sleep 1
-	bleachbit -c adobe_reader.cache chromium.cache chromium.current_session chromium.history elinks.history emesene.cache epiphany.cache firefox.url_history flash.cache flash.cookies google_chrome.cache google_chrome.history  links2.history opera.cache opera.search_history opera.url_history &> /dev/null
-	sleep 1
-	echo -e "$GREEN*$BLUE Dangerous applications$GREEN [KILLED]\n"
-	sleep 1
-	if [ ! -e /var/run/tor/tor.pid ]; then
-	echo -e "$GREEN*$BLUE starting Tor...\n" >&2
-	sleep 1
-	service resolvconf stop
-	killall dnsmasq
-	sleep 2
-	service tor start
-	sleep 6
+	if ask "Do you want to change the local hostname?" Y; then
+		read -p "Type it or press Enter for a random one > " CHOICE
+
+		if [ "$CHOICE" = "" ]; then
+			change_hostname
+		else
+			custom_hostname "$CHOICE"
+		fi
 	fi
-	if ! [ -f /etc/network/iptables.rules ]; then
-	iptables-save > /etc/network/iptables.rules
-	echo -e "$GREEN*$BLUE Saving iptables.rules...$RESETCOLOR\n"
-	sleep 2
-	fi	
-	iptables -F
-	iptables -t nat -F
-	echo -e "$GREEN*$BLUE iptables.rules$GREEN [SAVED]\n"
-	sleep 2
-	echo -e "$GREEN*$BLUE Saving resolv.conf...\n"
-	cp /etc/resolv.conf /etc/resolv.conf.bak
-	touch /etc/resolv.conf
-	sleep 2
-	echo -e "$GREEN*$BLUE resolv.conf$GREEN [SAVED]\n"
-	sleep 2
-	echo -e "$GREEN*$BLUE Modifying DNS...\n"
-	sleep 2
-	echo -e 'nameserver 127.0.0.1\nnameserver 213.73.91.35\nnameserver 87.118.100.175' > /etc/resolv.conf
-	echo -e "$GREEN*$BLUE resolv.conf: Chaos Computer Club & German Privacy Foundation DNS$GREEN [ACTIVATED]\n"$RESETCOLOR        
-	sleep 2
-
-	# set iptables nat
-	iptables -t nat -A OUTPUT -m owner --uid-owner $TOR_UID -j RETURN
-	iptables -t nat -A OUTPUT -p udp --dport 53 -j REDIRECT --to-ports 53
-	iptables -t nat -A OUTPUT -p tcp --dport 53 -j REDIRECT --to-ports 53
-	iptables -t nat -A OUTPUT -p udp -m owner --uid-owner $TOR_UID -m udp --dport 53 -j REDIRECT --to-ports 53
-	
-	# resolve .onion domains mapping 10.192.0.0/10 address space
-	iptables -t nat -A OUTPUT -p tcp -d 10.192.0.0/10 -j REDIRECT --to-ports 9040
-	iptables -t nat -A OUTPUT -p udp -d 10.192.0.0/10 -j REDIRECT --to-ports 9040
-	
-	# exclude local addresses
-	for NET in $TOR_EXCLUDE 127.0.0.0/9 127.128.0.0/10; do
-		iptables -t nat -A OUTPUT -d $NET -j RETURN
-	done
-	
-	# redirect all other output through TOR
-	iptables -t nat -A OUTPUT -p tcp --syn -j REDIRECT --to-ports $TOR_PORT
-	iptables -t nat -A OUTPUT -p udp -j REDIRECT --to-ports $TOR_PORT
-	iptables -t nat -A OUTPUT -p icmp -j REDIRECT --to-ports $TOR_PORT
-	
-	# accept already established connections
-	iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
-	
-	# exclude local addresses
-	for NET in $TOR_EXCLUDE 127.0.0.0/8; do
-		iptables -A OUTPUT -d $NET -j ACCEPT
-	done
-	
-	# allow only tor output
-	iptables -A OUTPUT -m owner --uid-owner $TOR_UID -j ACCEPT
-	iptables -A OUTPUT -j REJECT
-
-	echo -e "$GREEN*$BLUE Tor Tunneling$GREEN [ON]"$RESETCOLOR 
-	sleep 1
-	notify "Tor Tunneling ON"  
 }
 
 ## STOP ####
 function stop {
 	# Make sure only root can run our script
-	if [ $(id -u) -ne 0 ]; then
-		echo -e "\n$GREEN[$RED!$GREEN]$RED This script must be run as root\n" >&2
-		exit 1
+	check_root
+	# feel free to add your own internet connected app
+	kill_process
+	sleep 1
+	
+	if ask "Delete unnecessary files to preserve your privacy?" Y; then
+		bleachbit
 	fi
-	echo -e "\n$GREEN*$BLUE killing dangerous applications and cleaning some cache elements...\n"$RESETCOLOR
-	killall -q chrome dropbox iceweasel skype icedove thunderbird firefox-esr firefox chromium xchat transmission kvirc pidgin hexchat # feel free to add your own internet connected app
-	sleep 1
-	bleachbit -c adobe_reader.cache chromium.cache chromium.current_session chromium.history elinks.history emesene.cache epiphany.cache firefox.url_history flash.cache flash.cookies google_chrome.cache google_chrome.history  links2.history opera.cache opera.search_history opera.url_history &> /dev/null
-	sleep 1
-	echo -e "$GREEN*$BLUE Dangerous applications$GREEN [KILLED]\n"
-	sleep 1
-	iptables -F
-	iptables -t nat -F
+		
+	iptables_flush
+	
 	sleep 2
 	echo -e "$GREEN*$BLUE Restoring iptables.rules...$RESETCOLOR\n"
 	sleep 2
+	
 	if [ -f /etc/network/iptables.rules ]; then
 		iptables-restore < /etc/network/iptables.rules
 		rm /etc/network/iptables.rules
@@ -390,11 +651,43 @@ function stop {
 	echo -e "$GREEN*$BLUE iptables.rules$GREEN [RESTORED]\n"
 	sleep 2
 	fi
+	
 	echo -e "$GREEN*$BLUE Restoring resolv.conf...\n"
 	if [ -e /etc/resolv.conf.bak ]; then
 		rm /etc/resolv.conf
 		cp /etc/resolv.conf.bak /etc/resolv.conf
 	fi
+	
+	unset ftp_proxy  
+	unset http_proxy
+	unset https_proxy
+	unset socks_proxy 
+	unset LD_PRELOAD
+	
+	if [ "$(virt-what)" != "" ]; then
+		echo " $GREEN*$RESETCOLOR We can not change the MAC address on a virtual machine"
+	else
+		if ask "You want to change your MAC address?" Y; then
+			if ask "You want to change your MAC address permanent?" Y; then
+				start_mac permanent			
+			else
+				start_mac 
+			fi
+		fi
+	fi
+	
+	
+	if ask "You want to change your local hostname?" Y; then
+		read -p "Write it, or press Enter to use your  > " CHOICE
+
+		if [ "$CHOICE" = "" ]; then
+			restore_hostname
+		else
+			custom_hostname $CHOICE
+		fi
+	fi
+	
+	
 	echo -e "$GREEN*$BLUE resolv.conf$GREEN [RESTORED]\n"
 	sleep 2
 	echo -e "$GREEN*$BLUE Stopping Tor...\n"
@@ -422,16 +715,32 @@ function change {
 	sleep 1
 	echo -e "\n$GREEN*$BLUE Current Tor IP:\n"$GREEN
 	sleep 1
-	curl ipinfo.io/
+	curl -s https://check.torproject.org/?lang=en_US | egrep -m1 -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'
 	sleep 1
-	notify "Tor Relay Changed"  
+	notify "Tor Relay Changed" 
+	if [ "$(virt-what)" != "" ]; then
+		echo " $GREEN*$RESETCOLOR We can not change the MAC address on a virtual machine"
+	else
+		if ask "You want to change your MAC address?" Y; then
+			if ask "You want to change your MAC address permanent?" Y; then
+				start_mac permanent			
+			else
+				start_mac 
+			fi
+		fi
+	fi 
+	notify "Mac Address Changed"
 }
 
 ## STATUS ####
 function status {
 	echo -e "\n$GREEN*$BLUE Tor Tunneling Status:\n"$RESETCOLOR
-	service tor status 
+	service tor status
+	CURRENT_HOSTNAME=$(hostname)
+	echo -e " $GREEN*$RESETCOLOR Hostname $CURRENT_HOSTNAME" 
 }
+
+
 
 ### CASE ####
 
@@ -487,8 +796,8 @@ case "$1" in
 	status_polipo)
 		status_polipo
 	;;
-	start_mac)
-		start_mac
+	spoofing_wlan0_mac)
+		spoofing_wlan0_mac
 	;;
 	stop_mac)
 		stop_mac
@@ -530,7 +839,7 @@ case "$1" in
 	$RED anonym8 stop_polipo$BLUE      =>$GREEN Stop polipo services
 	$RED anonym8 status_polipo$BLUE    =>$GREEN Polipo status\n
 	$BLUE----[ macchanger related features ]----
-	$RED anonym8 start_mac$BLUE        =>$GREEN Start macchanger services
+	$RED anonym8 spoofing_wlan0_mac$BLUE        =>$GREEN Start macchanger services
 	$RED anonym8 stop_mac$BLUE         =>$GREEN Stop macchanger services
 	$RED anonym8 status_mac$BLUE       =>$GREEN macchanger status\n
 	$BLUE----[ arm related features ]----
