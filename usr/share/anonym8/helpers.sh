@@ -42,4 +42,6 @@ sleep 3
 	$RED anonym8 restore_hostname$BLUE =>$GREEN Restore Default Hostname
 	$RED anonym8 status_hostname$BLUE  =>$GREEN Show Current Hostname\n
 
-	$RESETCOLOR"
+	
+echo -e $RESETCOLOR
+exit 0
