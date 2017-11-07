@@ -27,7 +27,7 @@ _tor_uid="109"
 _trans_port="9040"
 
 #Tor's DNSPort
-_dns_port="5300"
+_dns_port="53"
 
 #Tor's VirtualAddrNetworkIPv4
 _virt_addr="10.192.0.0/10"
