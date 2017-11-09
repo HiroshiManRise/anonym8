@@ -66,3 +66,5 @@
 	ip6tables --policy OUTPUT  ACCEPT
 
 	echo -e " $GREEN*$RESET Reset of firewall 				: $OK"
+	echo -e $RESETCOLOR
+exit 0

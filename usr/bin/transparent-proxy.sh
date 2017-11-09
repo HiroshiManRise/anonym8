@@ -230,6 +230,7 @@ IPv6_rules_table
 
 echo -e "·\n $GREEN*$RESETCOLOR Transparent proxy firewall loaded.                  : $OK"
 
+echo -e "$RESETCOLOR"
 exit 0
 
 ###########################

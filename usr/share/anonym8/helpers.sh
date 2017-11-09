@@ -4,7 +4,7 @@
 	export RESETCOLOR='\033[1;00m'
 
 sleep 3
-	echo -e "	 anonym8 (v 1.0) Usage Ex:\n
+	echo -e "	 anonym8 (v 2.0) Usage Ex:\n
 	$RED anON$BLUE  =>$GREEN automated protection [ON]
 	$RED anOFF$BLUE =>$GREEN automated protection$RED [OFF]\n
 	$RED ADVANCED COMMANDS LIST:\n
@@ -40,7 +40,7 @@ sleep 3
 	$BLUE----[ hostname related features ]----
 	$RED anonym8 change_hostname$BLUE  =>$GREEN Randomly Spoofing Hostname
 	$RED anonym8 restore_hostname$BLUE =>$GREEN Restore Default Hostname
-	$RED anonym8 status_hostname$BLUE  =>$GREEN Show Current Hostname\n
+	$RED anonym8 status_hostname$BLUE  =>$GREEN Show Current Hostname\n"
 
 	
 echo -e $RESETCOLOR

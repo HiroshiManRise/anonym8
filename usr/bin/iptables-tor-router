@@ -66,3 +66,5 @@ iptables -t nat -A PREROUTING -i $_inc_if -p udp --dport 53 -j REDIRECT --to-por
 iptables -t nat -A PREROUTING -i $_inc_if -p udp   -j REDIRECT --to-ports $_trans_port
 iptables -t nat -A PREROUTING -i $_inc_if -p icmp  -j REDIRECT --to-ports $_trans_port
 iptables -t nat -A PREROUTING -i $_inc_if -p tcp --syn -j REDIRECT --to-ports $_trans_port
+echo -e $RESETCOLOR
+exit 0

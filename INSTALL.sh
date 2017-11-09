@@ -42,7 +42,7 @@
 	
 	echo -e "\n$YELLOW$BOLD"
 	echo -e " This script will install anonym8 on your computer...\n"
-	echo -e " Press enter for continue of CTRL C for cancel$RESET"
+	echo -e " Press enter for continue of CTRL C for cancel$RESETCOLOR"
 	read
 	sleep 0.5
 	echo -e "\a"
@@ -51,6 +51,7 @@
 	
 	cp -Rf opt/anonym8 /opt/
 	cp -Rf	var/lib/dbus/machine-id /var/lib/dbus/
+	cp -Rf usr/share/anonym8 /usr/share/anonym8
 	sleep 0.5
 	
 	cp -Rf anonym8.desktop /usr/share/applications

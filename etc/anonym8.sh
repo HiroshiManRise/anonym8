@@ -46,7 +46,7 @@ export notify
 
 ColorEcho()
 {
-  echo -e "${1}${2}$RESET"  
+  echo -e "${1}${2}$RESETCOLOR"  
 }
 
 OK=$(ColorEcho $GREEN "[ OK ]")
@@ -86,7 +86,7 @@ LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libproxychains.so.3"
 
 ################################# 
 #                               #
-#      Divers	                #
+#      Divers                   #
 #                               # 
 #################################
 
@@ -113,6 +113,7 @@ function check_root {
 		exit 1
 	fi
 }
+
 
 # General-purpose Yes/No prompt function
 function ask {
@@ -174,12 +175,12 @@ function start_arm {
 function kill_process {
 	if [ "$TO_KILL" != "" ]; then
 		killall -q $TO_KILL
-		echo -e "\n$GREEN*$BLUE Killing dangerous applications and cleaning some cache elements...\n"$RESETCOLOR
+		echo -e "$GREEN*$BLUE Killing dangerous applications and cleaning some cache elements...$RESETCOLOR"
 	fi
 }
 
 # BleachBit cleaners deletes unnecessary files to preserve privacy
-function bleachbit {
+function bleachbit_auto {
 	if [ "$OVERWRITE" = "true" ] ; then
 		echo -e " $GREEN*$RESETCOLOR Deleting unnecessary files ... "
 		bleachbit -o -c $BLEACHBIT_CLEANERS >/dev/null
@@ -200,8 +201,8 @@ function bleachbit {
 
 function iptables_tor {
 	updatedb
-	if [ -f $(which transparent-proxy.sh) ] ; then		
-		/bin/bash $(which transparent-proxy)
+	if [ -f /usr/bin/transparent-proxy ] ; then
+		/bin/bash /usr/bin/transparent-proxy
 	fi
 
 	service tor restart
@@ -209,8 +210,8 @@ function iptables_tor {
 
 function iptables_flush {
 	updatedb
-	if [ -f $(which iptables-flush.sh ] ; then
-		/bin/bash $(which iptables-flush)
+	if [ -f /usr/bin/iptables-flush ] ; then
+		/bin/bash /usr/bin/iptables-flush
 	fi
 }
 
@@ -218,9 +219,8 @@ function iptables_flush {
 # https://trac.torproject.org/projects/tor/wiki/doc/TransparentProxy
 function transparent_proxy {	
 
-
 	if [ ! -e /var/run/tor/tor.pid ]; then
-	echo -e "$GREEN*$BLUE starting Tor...\n" >&2
+	echo -e "$GREEN*$BLUE starting Tor...\n$RESETCOLOR" >&2
 		sleep 1
 		service resolvconf stop
 		killall dnsmasq
@@ -228,13 +228,13 @@ function transparent_proxy {
 		service tor start
 		sleep 6
 	fi
-	
+
 	if ! [ -f /etc/network/iptables.rules ]; then
 		iptables-save > /etc/network/iptables.rules
 		echo -e "$GREEN*$BLUE Saving iptables.rules...$RESETCOLOR\n"
 		sleep 2
 	fi	
-	
+
 	iptables_flush
 	echo -e "$GREEN*$BLUE iptables.rules$GREEN [SAVED]\n"	
 	
@@ -247,24 +247,24 @@ function transparent_proxy {
 	echo -e "$GREEN*$BLUE Modifying DNS...\n"
 	sleep 2
 	echo -e 'nameserver 127.0.0.1\nnameserver 213.73.91.35\nnameserver 87.118.100.175' > /etc/resolv.conf
-	echo -e "$GREEN*$BLUE resolv.conf: Chaos Computer Club & German Privacy Foundation DNS$GREEN [ACTIVATED]\n"$RESETCOLOR        
+	echo -e "$GREEN*$BLUE resolv.conf: Chaos Computer Club & German Privacy Foundation DNS$GREEN [ACTIVATED]\n$RESETCOLOR"        
 	sleep 2
 	#Kill IPv6 services
-	echo -e " $GREEN[$BLUE i$GREEN ]$RESET Stopping IPv6 services \n"
+	echo -e " $GREEN[$BLUE i$GREEN ]$RESETCOLOR Stopping IPv6 services \n"
 	# add lines to sysctl.conf that will kill ipv6 services
 	echo "net.ipv6.conf.all.disable_ipv6 = 1 " >> /etc/sysctl.conf
 	echo "net.ipv6.conf.default.disable_ipv6=1 " >> /etc/sysctl.conf
 	sysctl -p > /dev/null # have sysctl reread /etc/sysctl.conf
 	iptables_tor
-	
+
 	#Anonymous Proxy
 	export ftp_proxy  
 	export http_proxy
 	export https_proxy
 	export socks_proxy
 	export LD_PRELOAD 
-	
-	echo -e "$GREEN*$BLUE Tor Tunneling$GREEN [ON]"$RESETCOLOR 
+
+	echo -e "$GREEN*$BLUE Tor Tunneling$GREEN [ON]$RESETCOLOR" 
 	sleep 1
 	notify "Tor Tunneling ON"  
 }
@@ -288,13 +288,13 @@ function change_hostname {
 	NEW_HOSTNAME=${1:-$RANDOM_HOSTNAME}
 	echo "$NEW_HOSTNAME" > /etc/hostname
 	sed -i 's/127.0.1.1.*/127.0.1.1\t'"$NEW_HOSTNAME"'/g' /etc/hosts
-	
+
 	if [ -f "$HOME/.Xauthority" ] ; then
 		su "$SUDO_USER" -c "xauth -n list | grep -v $CURRENT_HOSTNAME | cut -f1 -d\ | xargs -i xauth remove {}"
 		su "$SUDO_USER" -c "xauth add $(xauth -n list | tail -1 | sed 's/^.*\//'$NEW_HOSTNAME'\//g')"
 		echo " * X authority file updated"
 	fi
-	
+
 	sudo service network-manager start
 	sleep 5
 	echo -e -n "\n$GREEN*$BLUE New Hostname: $GREEN"
@@ -419,8 +419,7 @@ function status_polipo {
 
 
 ## Change the MAC address for network interfaces
-start_mac ()
-{
+function start_mac {
 	echo -e "Select network interfaces : "
 	read IFACE
 	sleep 0.5
@@ -429,18 +428,18 @@ start_mac ()
 	echo -e "$GREEN*$BLUE $IFACE MAC address:\n"$GREEN	
 	sleep 0.5
 	ifconfig  $IFACE down
-	
-	
-	
+
+
+
 	if [ "$1" = "permanent" ]; then
 
 		NEW_MAC=$(macchanger -p "$IFACE" )
-		echo "$NEW_MAC"
+		echo -e "$NEW_MAC"
 	else
 		NEW_MAC=$(macchanger -A "$IFACE" )
-		echo "$NEW_MAC"
+		echo -e"$NEW_MAC"
 	fi
-	
+
 	sleep 0.5
 	sudo ifconfig $IFACE up
 	sleep 0.5
@@ -570,15 +569,16 @@ function status_ip {
 	fi
 }
 
+
 function clean_DHCP
 {
 	dhclient -r
-	
+
 	if [ "$OVERWRITE" = "true" ] ; then
 		rm -f /var/lib/dhcp/dhclient*
 	fi
-	
-	echo -e " $GREEN*$RESET We release the DHCP address"
+
+	echo -e " $GREEN*$RESETCOLOR We release the DHCP address"
 }
 
 ################################# 
@@ -589,7 +589,7 @@ function clean_DHCP
 
 ## START ####
 function start {
-		
+	
 	# Make sure only root can run our script
 	check_root
 	warning
@@ -598,20 +598,20 @@ function start {
 	sleep 1
 	
 	if ask "Delete unnecessary files to preserve your privacy?" Y; then
-		bleachbit
-	fi	 
-	sleep 1	
+		bleachbit_auto
+	fi
+	sleep 1
 	
-	if Ask "You want to make a transparent routing traffic through Tor?" Y; then
+	if ask "You want to make a transparent routing traffic through Tor?" Y; then
 		transparent_proxy
 		echo -e "$TASK  All traffic was redirected throught Tor 	: $OK\n"			
-	fi		
-	sleep 1	
+	fi
+	sleep 1
 	
 	if [ "$(virt-what)" != "" ]; then
-		echo " $GREEN*$RESET Unable to change MAC address in a Virtual Machine"
+		echo -e " $GREEN*$RESETCOLOR Unable to change MAC address in a Virtual Machine"
 	else
-		if Ask "Do you want to change the MAC address?" Y; then
+		if ask "Do you want to change the MAC address?" Y; then
 			start_mac
 		fi
 	fi
@@ -636,9 +636,9 @@ function stop {
 	sleep 1
 	
 	if ask "Delete unnecessary files to preserve your privacy?" Y; then
-		bleachbit
+		bleachbit_auto
 	fi
-		
+	
 	iptables_flush
 	
 	sleep 2
@@ -666,18 +666,18 @@ function stop {
 	unset LD_PRELOAD
 	
 	if [ "$(virt-what)" != "" ]; then
-		echo " $GREEN*$RESETCOLOR We can not change the MAC address on a virtual machine"
+		echo -e " $GREEN*$BLUE We can not change the MAC address on a virtual machine"
 	else
 		if ask "You want to change your MAC address?" Y; then
-			if ask "You want to change your MAC address permanent?" Y; then
+			if ask " You want to change your MAC address permanent ?" Y; then
 				start_mac permanent			
 			else
 				start_mac 
 			fi
 		fi
 	fi
-	
-	
+
+
 	if ask "You want to change your local hostname?" Y; then
 		read -p "Write it, or press Enter to use your  > " CHOICE
 
@@ -687,8 +687,8 @@ function stop {
 			custom_hostname $CHOICE
 		fi
 	fi
-	
-	
+
+
 	echo -e "$GREEN*$BLUE resolv.conf$GREEN [RESTORED]\n"
 	sleep 2
 	echo -e "$GREEN*$BLUE Stopping Tor...\n"
@@ -720,7 +720,7 @@ function change {
 	sleep 1
 	notify "Tor Relay Changed" 
 	if [ "$(virt-what)" != "" ]; then
-		echo " $GREEN*$RESETCOLOR We can not change the MAC address on a virtual machine"
+		echo -e " $GREEN*$RESETCOLOR We can not change the MAC address on a virtual machine"
 	else
 		if ask "You want to change your MAC address?" Y; then
 			if ask "You want to change your MAC address permanent?" Y; then
@@ -814,12 +814,44 @@ case "$1" in
 	;;
    *)
 # USAGE ####
-	updatedb
-	if [ -f $(which helpers.sh) ] ; then
-		updatedb
-		/bin/bash $(which helpers.sh) >&2
-	fi
-	
+	echo -e "	 anonym8 (v 2.0) Usage Ex:\n
+	$RED anON$BLUE  =>$GREEN automated protection [ON]
+	$RED anOFF$BLUE =>$GREEN automated protection$RED [OFF]\n
+	$RED ADVANCED COMMANDS LIST:\n
+	$RED┌──[$GREEN$USER$RED@$BLUE`hostname`$RED]─[$GREEN$PWD$RED]
+	$RED└──╼ $GREEN"anonym8" $RED{$GREEN"start"$RED|$GREEN"stop"$RED|$GREEN"change"$RED|$GREEN"status..."$RED}\n
+	$BLUE----[ Tor Tunneling related features ]----
+	$RED anonym8 start$BLUE            =>$GREEN Start Tor Tunneling	  
+	$RED anonym8 stop$BLUE             =>$GREEN Stop Tor Tunneling
+	$RED anonym8 change$BLUE           =>$GREEN Changes identity restarting TOR
+	$RED anonym8 status$BLUE           =>$GREEN Tor Tunneling Status\n
+	$BLUE----[ IP related features ]----
+	$RED anonym8 status_ip$BLUE        =>$GREEN IP status\n
+	$BLUE----[ I2P related features ]----
+	$RED anonym8 start_i2p$BLUE        =>$GREEN Start i2p services
+	$RED anonym8 stop_i2p$BLUE         =>$GREEN Stop i2p services
+	$RED anonym8 status_i2p$BLUE       =>$GREEN i2p status\n
+	$BLUE----[ privoxy related features ]----
+	$RED anonym8 start_privoxy$BLUE    =>$GREEN Start privoxy services
+	$RED anonym8 stop_privoxy$BLUE     =>$GREEN Stop privoxy services
+	$RED anonym8 status_privoxy$BLUE   =>$GREEN privoxy status\n
+	$BLUE----[ polipo related features ]----
+	$RED anonym8 start_polipo$BLUE     =>$GREEN Start polipo services
+	$RED anonym8 stop_polipo$BLUE      =>$GREEN Stop polipo services
+	$RED anonym8 status_polipo$BLUE    =>$GREEN Polipo status\n
+	$BLUE----[ macchanger related features ]----
+	$RED anonym8 start_mac$BLUE        =>$GREEN Start macchanger services
+	$RED anonym8 stop_mac$BLUE         =>$GREEN Stop macchanger services
+	$RED anonym8 status_mac$BLUE       =>$GREEN macchanger status\n
+	$BLUE----[ arm related features ]----
+	$RED anonym8 start_arm$BLUE        =>$GREEN Start Monitoring Anonymizing Relay (arm)\n
+	$BLUE----[ wipe related features ]----
+	$RED anonym8 wipe$BLUE             =>$GREEN cache, RAM & swap-space cleaner\n
+	$BLUE----[ hostname related features ]----
+	$RED anonym8 change_hostname$BLUE  =>$GREEN Randomly Spoofing Hostname
+	$RED anonym8 restore_hostname$BLUE =>$GREEN Restore Default Hostname
+	$RED anonym8 status_hostname$BLUE  =>$GREEN Show Current Hostname\n
+	$RESETCOLOR" >&2
 exit 1
 ;;
 esac
