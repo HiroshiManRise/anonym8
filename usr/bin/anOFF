@@ -1,0 +1,31 @@
+#!/bin/bash
+
+	export BLUE='\033[1;94m'
+	export GREEN='\033[1;92m'
+	export RED='\033[1;91m'
+	export RESETCOLOR='\033[1;00m'
+
+	anonym8 stop
+	sleep 25
+	anonym8 stop_privoxy
+	sleep 2
+	anonym8 stop_polipo
+	sleep 2
+	anonym8 stop_mac
+	sleep 3
+	anonym8 wipe
+	sleep 3
+	anonym8 status_ip
+	sleep 3
+
+	
+	
+	if [ -f /usr/share/anonym8/banner.sh ] ; then
+		
+		/bin/bash /usr/share/anonym8/banner.sh
+	fi
+	
+	if [ -f /usr/share/anonym8/helpers.sh ] ; then
+		
+		/bin/bash /usr/share/anonym8/helpers.sh
+	fi
