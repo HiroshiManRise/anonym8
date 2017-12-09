@@ -20,14 +20,15 @@
 #===============================================================================
 
 ### set variables
+
 #the UID that Tor runs as (varies from system to system)
-_tor_uid="109"
+[ -n "$TOR_USER" ] || TOR_USER="$(id -u debian-tor)"
 
 #Tor's TransPort
-_trans_port="9040"
+TOR_PORT="9040"
 
 #Tor's DNSPort
-_dns_port="53"
+DNS_PORT="53"
 
 #Tor's VirtualAddrNetworkIPv4
 _virt_addr="10.192.0.0/10"
@@ -59,12 +60,12 @@ iptables -A FORWARD -i $_inc_if -o $_out_if_2 -j ACCEPT
 
 ### set iptables *nat
 #*nat PREROUTING (For middlebox)
-iptables -t nat -A PREROUTING -d $_virt_addr -i $_inc_if -p tcp --syn -j REDIRECT --to-ports $_trans_port
+iptables -t nat -A PREROUTING -d $_virt_addr -i $_inc_if -p tcp --syn -j REDIRECT --to-ports $TOR_PORT
 iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 22 -j REDIRECT --to-ports 22
-iptables -t nat -A PREROUTING -i $_inc_if -p udp --dport 5300 -j REDIRECT --to-ports $_dns_port
-iptables -t nat -A PREROUTING -i $_inc_if -p udp --dport 53 -j REDIRECT --to-ports $_dns_port
-iptables -t nat -A PREROUTING -i $_inc_if -p udp   -j REDIRECT --to-ports $_trans_port
-iptables -t nat -A PREROUTING -i $_inc_if -p icmp  -j REDIRECT --to-ports $_trans_port
-iptables -t nat -A PREROUTING -i $_inc_if -p tcp --syn -j REDIRECT --to-ports $_trans_port
+iptables -t nat -A PREROUTING -i $_inc_if -p udp --dport 5300 -j REDIRECT --to-ports $DNS_PORT
+iptables -t nat -A PREROUTING -i $_inc_if -p udp --dport 53 -j REDIRECT --to-ports $DNS_PORT
+iptables -t nat -A PREROUTING -i $_inc_if -p udp   -j REDIRECT --to-ports $TOR_PORT
+iptables -t nat -A PREROUTING -i $_inc_if -p icmp  -j REDIRECT --to-ports $TOR_PORT
+iptables -t nat -A PREROUTING -i $_inc_if -p tcp --syn -j REDIRECT --to-ports $TOR_PORT
 echo -e $RESETCOLOR
 exit 0

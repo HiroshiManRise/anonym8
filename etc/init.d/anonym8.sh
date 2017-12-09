@@ -7,13 +7,14 @@
 #         USAGE:  anonym8 start|stop|change|status
 #
 #   DESCRIPTION:  This code is based on anonsurf by #ParrotSec & AnonSecTunnel by cysec666 #AnonSec 
-#                 implementing TOR, I2P, Privoxy, Polipo, arm-tor and MacChanger for a simple and better privacy and # #                 security.	
+#                 implementing TOR, I2P, Privoxy, Polipo, arm-tor and MacChanger for a simple and better privacy and  
+#                 security.	
 # Short-Description: Transparent Proxy through TOR, I2P, Privoxy, Polipo + arm-tor and MacChanger features virt-what
 # 	Copyright (C) 2016 Coded by Hiroshiman
 #       OPTIONS:  ---
 #  REQUIREMENTS:Tor macchanger resolvconf dnsmasq polipo privoxy arm libnotify curl bleachbit
 #          BUGS:  ---
-#         NOTES:  Contact teeknofil.dev@gmail.com for bug.
+#         NOTES:  Contact teeknofil.dev@gmail.com, @HiroshimanRise for bug.
 #         AUTHOR:  Twitter: @HiroshimanRise
 #         Thanks to:
 #		cysec666 '@cysec666'
@@ -33,9 +34,6 @@
 ### END INIT INFO
 
 
-
-
-
 export BOLD='\033[01;01m'	# Highlight
 export BLUE='\033[1;94m'	# Info
 export GREEN='\033[1;92m'	# Success
@@ -50,17 +48,6 @@ ColorEcho()
 }
 
 OK=$(ColorEcho $GREEN "[ OK ]")
-TASK=$(ColorEcho $GREEN "[+]")
-
-# Destinations you don't want routed through Tor
-TOR_EXCLUDE="192.168.0.0/16 172.16.0.0/12 10.0.0.0/8"
-
-# The UID Tor runs as
-# change it if, starting tor, the command 'ps -e | grep tor' returns a different UID
-TOR_UID="debian-tor"
-
-# Tor's TransPort
-TOR_PORT="9040"
 
 # List, separated by spaces, of process names that should be killed
 TO_KILL="chrome chromium transmission dropbox iceweasel icedove firefox firefox-esr pidgin pidgin.orig skype deluge thunderbird xchat dnsmasq"
@@ -96,7 +83,7 @@ function warning {
 	echo " What you are doing is allowing you to remain anonymous"
 	echo " Do not do stupid things".
 	echo
-	echo -e "  $GREEN[$RED!$GREEN]$RESETCOLOR Edit /etc/default/transparent-proxy.sh for your firewall ! ! ! \n"
+	echo -e "  $GREEN[$RED!$GREEN]$RESETCOLOR Edit /usr/bin/transparent-proxy.sh for your firewall ! ! ! \n"
 }
 
 ## notify ####
@@ -182,7 +169,7 @@ function kill_process {
 # BleachBit cleaners deletes unnecessary files to preserve privacy
 function bleachbit_auto {
 	if [ "$OVERWRITE" = "true" ] ; then
-		echo -e " $GREEN*$RESETCOLOR Deleting unnecessary files ... "
+		echo -e "\n $GREEN*$BLUE Deleting unnecessary files ... "
 		bleachbit -o -c $BLEACHBIT_CLEANERS >/dev/null
 	else
 		echo -e " $GREEN*$RESETCOLOR Deleting unnecessary files ... "
@@ -201,8 +188,8 @@ function bleachbit_auto {
 
 function iptables_tor {
 	updatedb
-	if [ -f /usr/bin/transparent-proxy ] ; then
-		/bin/bash /usr/bin/transparent-proxy
+	if [ -f /usr/bin/transparent-proxy.sh ] ; then
+		/bin/bash /usr/bin/transparent-proxy.sh
 	fi
 
 	service tor restart
@@ -210,8 +197,8 @@ function iptables_tor {
 
 function iptables_flush {
 	updatedb
-	if [ -f /usr/bin/iptables-flush ] ; then
-		/bin/bash /usr/bin/iptables-flush
+	if [ -f /usr/bin/iptables-flush.sh ] ; then
+		/bin/bash /usr/bin/iptables-flush.sh
 	fi
 }
 
@@ -239,8 +226,11 @@ function transparent_proxy {
 	echo -e "$GREEN*$BLUE iptables.rules$GREEN [SAVED]\n"	
 	
 	echo -e "$GREEN*$BLUE Saving resolv.conf...\n"
-	cp /etc/resolv.conf /etc/resolv.conf.bak
+	if [ -f /etc/resolv.conf ] ; then
+		cp /etc/resolv.conf /etc/resolv.conf.bak
+	fi
 	touch /etc/resolv.conf
+	
 	sleep 2
 	echo -e "$GREEN*$BLUE resolv.conf$GREEN [SAVED]\n"
 	sleep 2
@@ -279,8 +269,16 @@ function transparent_proxy {
 
 # change ####
 function change_hostname {
-	cp /etc/hostname /etc/hostname.bak
-	cp /etc/hosts /etc/hosts.bak
+
+	if [ -f /etc/hostname ] ; then
+		cp /etc/hostname /etc/hostname.bak
+	fi
+
+	if [ -f /etc/hosts ] ; then
+		cp /etc/hosts /etc/hosts.bak
+	fi
+
+	
 	sudo service network-manager stop
 	CURRENT_HOSTNAME=$(hostname)
 	clean_DHCP true
@@ -419,7 +417,48 @@ function status_polipo {
 
 
 ## Change the MAC address for network interfaces
+# START ####
+function start_mac_wlan0 {
+	echo -e "\n$GREEN*$BLUE Spoofing Mac Address...\n"
+	sudo service network-manager stop
+	sleep 1
+	echo -e "$GREEN*$BLUE wlan0 MAC address:\n"$GREEN
+	sleep 1
+	sudo ifconfig wlan0 down
+	sleep 1
+	sudo macchanger -a wlan0
+	sleep 1
+	sudo ifconfig wlan0 up
+	sleep 1
+	sudo service network-manager start
+	echo -e "\n$GREEN*$BLUE Mac Address Spoofing$GREEN [ON]"$RESETCOLOR
+	sleep 1
+	notify "Mac Address Spoofing ON" 
+}
+
+# STOP ####
+function stop_mac_wlan0 {
+	echo -e "\n$GREEN*$BLUE Restoring Mac Address...\n"
+	sudo service network-manager stop
+	sleep 1
+	echo -e "$GREEN*$BLUE wlan0 MAC address:\n"$GREEN	
+	sleep 1
+	sudo ifconfig wlan0 down
+	sleep 1
+	sudo macchanger -p wlan0
+	sleep 1
+	sudo ifconfig wlan0 up
+	sleep 1
+	sudo service network-manager start
+	sleep 1
+	echo -e "\n$GREEN*$BLUE Mac Address Spoofing$RED [OFF]"$RESETCOLOR
+	sleep 1
+	notify "Mac Address Spoofing OFF" 
+}
+
+#### START 
 function start_mac {
+	echo -e "\n$GREEN*$BLUE Spoofing Mac Address...\n"
 	echo -e "Select network interfaces : "
 	read IFACE
 	sleep 0.5
@@ -444,42 +483,26 @@ function start_mac {
 	sudo ifconfig $IFACE up
 	sleep 0.5
 	sudo service network-manager start
+	echo -e "\n$GREEN*$BLUE Mac Address Spoofing$GREEN [ON]"$RESETCOLOR
 	sleep 0.5
 	dhclient 
-}
-
-
-# START ####
-function spoofing_wlan0_mac {
-	echo -e "\n$GREEN*$BLUE Spoofing Mac Address...\n"
-	sudo service network-manager stop
-	sleep 1
-	echo -e "$GREEN*$BLUE wlan0 MAC address:\n"$GREEN
-	sleep 1
-	sudo ifconfig wlan0 down
-	sleep 1
-	sudo macchanger -a wlan0
-	sleep 1
-	sudo ifconfig wlan0 up
-	sleep 1
-	sudo service network-manager start
-	echo -e "\n$GREEN*$BLUE Mac Address Spoofing$GREEN [ON]"$RESETCOLOR
-	sleep 1
-	notify "Mac Address Spoofing ON" 
+	notify "Mac Address Spoofing ON"
 }
 
 # STOP ####
 function stop_mac {
 	echo -e "\n$GREEN*$BLUE Restoring Mac Address...\n"
+	echo -e "Select network interfaces : "
+	read IFACE
+	sleep 0.5
 	sudo service network-manager stop
-	sleep 1
 	echo -e "$GREEN*$BLUE wlan0 MAC address:\n"$GREEN	
 	sleep 1
-	sudo ifconfig wlan0 down
+	sudo ifconfig $IFACE down
 	sleep 1
-	sudo macchanger -p wlan0
+	sudo macchanger -p $IFACE
 	sleep 1
-	sudo ifconfig wlan0 up
+	sudo ifconfig $IFACE up
 	sleep 1
 	sudo service network-manager start
 	sleep 1
@@ -491,10 +514,12 @@ function stop_mac {
 # STATUS ####
 function status_mac {
 	echo -e "\n$GREEN*$BLUE Mac Adress Status:\n"
-	sleep 1
+	echo -e "Select network interfaces : "
+	read IFACE
+	sleep 0.5
 	echo -e "$GREEN*$BLUE wlan0 Mac Adress:\n"$GREEN
 	sleep 1
-	macchanger wlan0
+	macchanger $IFACE
 	sleep 1
 }
 
@@ -578,7 +603,7 @@ function clean_DHCP
 		rm -f /var/lib/dhcp/dhclient*
 	fi
 
-	echo -e " $GREEN*$RESETCOLOR We release the DHCP address"
+	echo -e "$GREEN*$BLUE We release the DHCP address"
 }
 
 ################################# 
@@ -604,15 +629,15 @@ function start {
 	
 	if ask "You want to make a transparent routing traffic through Tor?" Y; then
 		transparent_proxy
-		echo -e "$TASK  All traffic was redirected throught Tor 	: $OK\n"			
+		echo -e "$GREEN*$BLUE All traffic was redirected throught Tor 	: $OK\n"			
 	fi
 	sleep 1
 	
 	if [ "$(virt-what)" != "" ]; then
-		echo -e " $GREEN*$RESETCOLOR Unable to change MAC address in a Virtual Machine"
+		echo -e "$GREEN*$BLUE Unable to change MAC address in a Virtual Machine"
 	else
 		if ask "Do you want to change the MAC address?" Y; then
-			start_mac
+			spoofing_wlan0_mac
 		fi
 	fi
 	
@@ -670,9 +695,9 @@ function stop {
 	else
 		if ask "You want to change your MAC address?" Y; then
 			if ask " You want to change your MAC address permanent ?" Y; then
-				start_mac permanent			
+				spoofing_wlan0_mac permanent			
 			else
-				start_mac 
+				spoofing_wlan0_mac 
 			fi
 		fi
 	fi
@@ -724,9 +749,9 @@ function change {
 	else
 		if ask "You want to change your MAC address?" Y; then
 			if ask "You want to change your MAC address permanent?" Y; then
-				start_mac permanent			
+				spoofing_wlan0_mac permanent			
 			else
-				start_mac 
+				spoofing_wlan0_mac 
 			fi
 		fi
 	fi 
@@ -754,6 +779,9 @@ case "$1" in
 	;;
 	restore_hostname)
 		restore_hostname
+	;;
+	custom_hostname)
+		custom_hostname
 	;;
 	start)
 		start
@@ -797,8 +825,14 @@ case "$1" in
 	status_polipo)
 		status_polipo
 	;;
-	spoofing_wlan0_mac)
-		spoofing_wlan0_mac
+	start_mac_wlan0)
+		start_mac_wlan0
+	;;
+	stop_mac_wlan0)
+		stop_mac_wlan0
+	;;
+	start_mac)
+		start_mac
 	;;
 	stop_mac)
 		stop_mac
@@ -840,6 +874,8 @@ case "$1" in
 	$RED anonym8 stop_polipo$BLUE      =>$GREEN Stop polipo services
 	$RED anonym8 status_polipo$BLUE    =>$GREEN Polipo status\n
 	$BLUE----[ macchanger related features ]----
+	$RED anonym8 start_mac_wlan0$BLUE  =>$GREEN Start macchanger wlan0 services
+	$RED anonym8 stop_mac_wlan0$BLUE   =>$GREEN Stop macchanger wlan0 services	
 	$RED anonym8 start_mac$BLUE        =>$GREEN Start macchanger services
 	$RED anonym8 stop_mac$BLUE         =>$GREEN Stop macchanger services
 	$RED anonym8 status_mac$BLUE       =>$GREEN macchanger status\n
@@ -849,6 +885,7 @@ case "$1" in
 	$RED anonym8 wipe$BLUE             =>$GREEN cache, RAM & swap-space cleaner\n
 	$BLUE----[ hostname related features ]----
 	$RED anonym8 change_hostname$BLUE  =>$GREEN Randomly Spoofing Hostname
+	$RED anonym8 custom_hostname$BLUE =>$GREEN Custom Spoofing Hostname	
 	$RED anonym8 restore_hostname$BLUE =>$GREEN Restore Default Hostname
 	$RED anonym8 status_hostname$BLUE  =>$GREEN Show Current Hostname\n
 	$RESETCOLOR" >&2

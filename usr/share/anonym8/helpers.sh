@@ -30,6 +30,8 @@ sleep 3
 	$RED anonym8 stop_polipo$BLUE      =>$GREEN Stop polipo services
 	$RED anonym8 status_polipo$BLUE    =>$GREEN Polipo status\n
 	$BLUE----[ macchanger related features ]----
+	$RED anonym8 start_mac_wlan0$BLUE  =>$GREEN Start macchanger wlan0 services
+	$RED anonym8 stop_mac_wlan0$BLUE   =>$GREEN Stop macchanger wlan0 services	
 	$RED anonym8 start_mac$BLUE        =>$GREEN Start macchanger services
 	$RED anonym8 stop_mac$BLUE         =>$GREEN Stop macchanger services
 	$RED anonym8 status_mac$BLUE       =>$GREEN macchanger status\n
@@ -39,6 +41,7 @@ sleep 3
 	$RED anonym8 wipe$BLUE             =>$GREEN cache, RAM & swap-space cleaner\n
 	$BLUE----[ hostname related features ]----
 	$RED anonym8 change_hostname$BLUE  =>$GREEN Randomly Spoofing Hostname
+	$RED anonym8 custom_hostname$BLUE =>$GREEN Custom Spoofing Hostname	
 	$RED anonym8 restore_hostname$BLUE =>$GREEN Restore Default Hostname
 	$RED anonym8 status_hostname$BLUE  =>$GREEN Show Current Hostname\n"
 

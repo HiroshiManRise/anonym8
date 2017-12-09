@@ -29,13 +29,13 @@
 
 	ColorEcho()
 	{
-	  echo -e "${1}${2}$RESET\n"
+	  echo -e "${1}${2}$RESETCOLOR\n"
 	}
 
 	OK=$(ColorEcho $GREEN "[ OK ]")
-	TASK=$(ColorEcho $GREEN "[+]")
+	
 
-	echo -e "$TASK Reset policy by default  \n";
+	echo -e "$GREEN*$BLUE Reset policy by default  \n";
 
 	iptables -X
 	iptables -F
@@ -65,6 +65,6 @@
 	ip6tables --policy FORWARD ACCEPT
 	ip6tables --policy OUTPUT  ACCEPT
 
-	echo -e " $GREEN*$RESET Reset of firewall 				: $OK"
-	echo -e $RESETCOLOR
+	echo -e "$GREEN*$BLUE Reset of firewall 				: $OK"
+	echo -e "$RESETCOLOR"
 exit 0

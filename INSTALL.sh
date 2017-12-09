@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
-
 #=======================================================================
 #
 #          FILE:  INSTALL.sh
@@ -42,22 +40,23 @@
 	
 	echo -e "\n$YELLOW$BOLD"
 	echo -e " This script will install anonym8 on your computer...\n"
-	echo -e " Press enter for continue of CTRL C for cancel$RESETCOLOR"
+	echo -e " Press enter for continue of CTRL + C for cancel$RESETCOLOR"
 	read
 	sleep 0.5
 	echo -e "\a"
-	chmod +x /etc/init.d/anonym8.sh usr/bin/* /opt/anonym8/anonym8-gui /usr/share/anonym8/*
-	sleep 0.5
 	
+	chmod +x etc/init.d/anonym8.sh usr/bin/* opt/anonym8/anonym8-gui usr/share/anonym8/*
+	sleep 0.5
+
 	cp -Rf opt/anonym8 /opt/
-	cp -Rf	var/lib/dbus/machine-id /var/lib/dbus/
+	cp -Rf var/lib/dbus/machine-id /var/lib/dbus/
 	cp -Rf usr/share/anonym8 /usr/share/anonym8
 	sleep 0.5
 	
 	cp -Rf anonym8.desktop /usr/share/applications
 	sleep 0.5
 	
-	cp -Rf etc/anonym8.sh /etc/init.d/anonym8.sh
+	cp -Rf etc/init.d/anonym8.sh /etc/init.d/anonym8.sh
 	sleep 0.5
 	
 	cp -Rf usr/bin/* /usr/bin/
@@ -65,7 +64,7 @@
 	
 	mkdir -p /usr/share/anonym8
 	cp -Rf usr/share/anonym8/* /usr/share/anonym8/
-	
+		
 	## Check already program installing for speed setting
 	apt-get update --fix-missing 
 	sleep 0.5
@@ -153,6 +152,7 @@
 	## End APT
 	
 	echo -e "\n"
+	
 	# USAGE ####
 	updatedb
 	if [ -f $(which helpers.sh) ] ; then

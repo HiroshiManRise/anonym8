@@ -39,20 +39,20 @@
 ####### Global variable
 #######
 
-BOLD="\033[01;01m" # Higligh
-BLUE='\033[1;94m'
-GREEN='\e[0;32m'   # Success
-YELLOW='\e[01;33m' # Warning/Information 
-RED='\033[1;91m'   # Error
-RESET="\033[00m"   # Normal
+export BOLD='\033[01;01m'	# Highlight
+export BLUE='\033[1;94m'	# Info
+export GREEN='\033[1;92m'	# Success
+export RED='\033[1;91m'		# Issues/Errors
+export YELLOW='\033[01;33m'	# Warnings/Information	
+export RESETCOLOR='\033[1;00m'
 
 ColorEcho()
 {
-  echo -e "${1}${2}$RESET"  
+  echo -e "${1}${2}$RESETCOLOR"  
 }
 
 OK=$(ColorEcho $GREEN "[ OK ]")
-TASK=$(ColorEcho $GREEN "[+]")
+
 
 
 
@@ -69,9 +69,9 @@ TOR_EXCLUDE="192.168.0.0/16 172.16.0.0/12 10.0.0.0/8"
 ###########################
 
 #the UID that Tor runs as (varies from system to system)
-[ -n "$TOR_UID" ] || TOR_USER="$(id -u debian-tor)"
+[ -n "$TOR_UID" ] || TOR_UID="$(id -u debian-tor)"
 
-echo -e "\n$TASK $YELLOW Loading Transparent proxy firewall... $RESETCOLOR            \n";
+echo -e "\n $YELLOW Loading Transparent proxy firewall... $RESETCOLOR            \n";
 
 
 ###########################
@@ -84,7 +84,7 @@ echo -e "\n$TASK $YELLOW Loading Transparent proxy firewall... $RESETCOLOR      
 ## correlation through circuit sharing.
 
 ## Transparent Proxy Ports 
-[ -n "$TOR_PORT" ] || TRANS_PORT="9040"
+[ -n "$TOR_PORT" ] || TOR_PORT="9040"
 [ -n "$DNS_PORT" ] || DNS_PORT="53"
 
 ####################################
@@ -97,13 +97,15 @@ function forwarding {
 	# set iptables nat
 	iptables -t nat -A OUTPUT -m owner --uid-owner $TOR_UID -j RETURN
 	## redirect all DNS traffic to TRANS_PORT	
-	iptables -t nat -A OUTPUT -p udp --dport $DNS_PORT -j REDIRECT --to-ports $DNS_PORT
-	iptables -t nat -A OUTPUT -p tcp --dport $DNS_PORT -j REDIRECT --to-ports $DNS_PORT
-	iptables -t nat -A OUTPUT -p udp -m owner --uid-owner $TOR_UID -m udp --dport $DNS_PORT -j REDIRECT --to-ports $DNS_PORT
+	iptables -t nat -A OUTPUT -p udp --dport 53 -j REDIRECT --to-ports  $DNS_PORT
+	iptables -t nat -A OUTPUT -p tcp --dport 53 -j REDIRECT --to-ports  $DNS_PORT
+	iptables -t nat -A OUTPUT -p udp -m owner --uid-owner $TOR_UID -m udp --dport 53 -j REDIRECT --to-ports 53	
+
 	
 	# resolve .onion domains mapping 10.192.0.0/10 address space
-	iptables -t nat -A OUTPUT -p tcp -d 10.192.0.0/10 -j REDIRECT --to-ports 9040
-	iptables -t nat -A OUTPUT -p udp -d 10.192.0.0/10 -j REDIRECT --to-ports 9040
+	iptables -t nat -A OUTPUT -p tcp -d 10.192.0.0/10 -j REDIRECT --to-ports $TOR_PORT
+	iptables -t nat -A OUTPUT -p udp -d 10.192.0.0/10 -j REDIRECT --to-ports $TOR_PORT
+
 	## Exclude connections to local network from being redirected through Tor	
 	# exclude local addresses
 	for NET in $TOR_EXCLUDE 127.0.0.0/9 127.128.0.0/10; do
@@ -131,14 +133,14 @@ function IPv4_rules_table {
 	######### aucune règle spécifique ne s'applique.
 
 
-	echo -e "\n$TASK Policy rules                               : $YELLOW[ Start Initialization ]$RESETCOLOR\n"
+	echo -e "\n$GREEN*$BLUE Policy rules                                 : $YELLOW[ Start Initialization ]$RESETCOLOR\n"
 
 	
 	### Allow loopback
 	## Traffic on the loopback interface is accepted.
 	iptables -t filter -A INPUT  -i lo  -j ACCEPT	
 	iptables -t filter -A OUTPUT -o lo  -j ACCEPT
-	echo -e " $GREEN*$RESETCOLOR Allow loopback                                : $OK"
+	echo -e "$GREEN*$BLUE Allow loopback                                : $OK"
 
 	### Allow PING
 	iptables -t filter -A INPUT -p icmp -j ACCEPT
@@ -150,7 +152,7 @@ function IPv4_rules_table {
 	#### Established incoming connections are accepted.
 	iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 	## Existing connections are accepted.
-	iptables -A OUTPUT -m state --state ESTABLISHED,NEW -j ACCEP
+	iptables -A OUTPUT -m state --state ESTABLISHED,NEW -j ACCEPT
 	
 	# exclude local addresses
 	for NET in $TOR_EXCLUDE 127.0.0.0/8; do
@@ -167,18 +169,18 @@ function IPv4_rules_table {
 	## Drop is better than reject here, because we do not want to reveal it's a Linux.
 	
 	iptables -P INPUT DROP
-	echo -e " $GREEN*$RESETCOLOR Block all connect INPUT                       : $OK"
+	echo -e "$GREEN*$BLUE Block all connect INPUT                       : $OK"
 	  
 	## FORWARD rules does not actually do anything if forwarding is disabled. 
 	##Better be safe just in case.
 	iptables -P FORWARD DROP
-	echo -e " $GREEN*$RESETCOLOR Block all connect FORWARD                     : $OK"
+	echo -e "$GREEN*$BLUE Block all connect FORWARD                     : $OK"
 	  
 	iptables -P OUTPUT DROP
-	echo -e " $GREEN*$RESETCOLOR Block all connect OUTPUT                      : $OK"
+	echo -e "$GREEN*$BLUE Block all connect OUTPUT                      : $OK"
 
 	
-	echo -e "\n $GREEN*$RESETCOLOR Policy by defaut                              : $OK"
+	echo -e "\n$GREEN*$BLUE Policy by defaut                              : $OK"
 
 }
 
@@ -228,7 +230,7 @@ forwarding
 IPv4_rules_table
 IPv6_rules_table
 
-echo -e "·\n $GREEN*$RESETCOLOR Transparent proxy firewall loaded.                  : $OK"
+echo -e "\n$GREEN*$BLUE Transparent proxy firewall loaded.           : $OK"
 
 echo -e "$RESETCOLOR"
 exit 0

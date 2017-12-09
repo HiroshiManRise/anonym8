@@ -19,14 +19,14 @@
 	sleep 3
 	updatedb
 	
-	if [ -f $(which banner.sh) ] ; then
+	if [ -f /usr/share/anonym8/banner.sh ] ; then
 		
-		/bin/bash $(which banner.sh)
+		/bin/bash /usr/share/anonym8/banner.sh
 	fi
 	
-	if [ -f $(which helpers.sh) ] ; then
+	if [ -f /usr/share/anonym8/helpers.sh ] ; then
 		
-		/bin/bash $(which helpers.sh)
+		/bin/bash /usr/share/anonym8/helpers.sh
 	fi
 
-	$RESETCOLOR"
+	
